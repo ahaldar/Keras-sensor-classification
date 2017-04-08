@@ -12,6 +12,23 @@ output = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0],
 #print x.shape
 #print y.shape
 
+def clean(d):
+	
+	out = d
+	inds = np.arange(1200)
+	for i in range(16):
+		zeros, x = np.nonzero(d[i]==0), lambda z: z.nonzero()[0]
+		#print zeros
+		out[i][zeros[0]] = np.interp(x(zeros[0]), x(~zeros[0]), out[i][~zeros[0]])
+	#for i in range(1200):
+	#	inds = np.arange(1200)
+	#	good = np.where(np.nonzero(d[i]))
+	#	print good
+	#	f = interp.interp1d(inds, d[i],bounds_error=False)
+	#	out[i] = np.where(np.nonzero(d[i]),d[i],f(inds))
+	
+	return out
+
 def window(d, n):
 
 	out = np.zeros((16, 1200-n))
@@ -43,12 +60,20 @@ def power(d, n):
 
 	return power			
 
-print data
-out = window(data, 1000)
-print out.shape
-print out
+#temp = np.array([[1,2,3,0,0,2,4,0,1,0],[1,1,1,0,0,2,2,0,1,0]])
+#print temp
+#print data
+#plt.plot(np.arange(1200),data[0])
+clean = clean(data)
+#print clean
+#plt.plot(np.arange(1200),clean[0])
+#pylab.show()
+out = window(clean, 1000)
+#print out.shape
+#print out
 #plt.plot(out[0])
 #plt.show
+
 
 
 from keras.models import Sequential
@@ -76,14 +101,13 @@ epochs = 500
 learning_rate = 0.5
 decay_rate = learning_rate / epochs
 momentum = 0.9
-
 sgd = SGD(lr=learning_rate, momentum=momentum, decay=decay_rate, nesterov=False)
 '''
 # compile model
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the model
-model.fit(X, Y, validation_split = 0.33, nb_epoch=200, batch_size=100)
+model.fit(X, Y, validation_split = 0.33, nb_epoch=500, batch_size=150)
 
 # evaluate the model
 scores = model.evaluate(X, Y)
@@ -95,5 +119,4 @@ predictions = model.predict(X)
 # round predictions
 rounded = [[round(x1),round(x2),round(x3),round(x4)] for [x1,x2,x3,x4] in predictions]
 print rounded
-
 
