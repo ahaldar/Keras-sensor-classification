@@ -79,8 +79,6 @@ out = window(clean3, 1000)
 #plt.plot(out[0])
 #plt.show()
 
-out2 = window(data, 1000)
-
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
