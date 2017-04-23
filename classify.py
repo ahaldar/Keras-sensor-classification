@@ -13,13 +13,13 @@ output = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0],
 #print y.shape
 
 def clean(d):
-	
 	out = d
 	inds = np.arange(1200)
 	for i in range(16):
 		zeros, x = np.nonzero(d[i]==0), lambda z: z.nonzero()[0]
 		#print zeros
-		out[i][zeros[0]] = np.interp(x(zeros[0]), x(~zeros[0]), out[i][~zeros[0]])
+		#out[i][1199-zeros[0]] = np.interp(x(zeros[0]), x(~zeros[0]), out[i][~zeros[0]])
+		out[i][zeros[0]] = np.interp(x(zeros[0]), inds, d[i])
 	#for i in range(1200):
 	#	inds = np.arange(1200)
 	#	good = np.where(np.nonzero(d[i]))
@@ -63,18 +63,23 @@ def power(d, n):
 #temp = np.array([[1,2,3,0,0,2,4,0,1,0],[1,1,1,0,0,2,2,0,1,0]])
 #print temp
 #print data
-#plt.plot(np.arange(1200),data[0])
-clean = clean(data)
-#print clean
-#plt.plot(np.arange(1200),clean[0])
-#pylab.show()
-out = window(clean, 1000)
+#plt.plot(np.arange(1200),data[0], color='b')
+plt.scatter(np.arange(1200),data[0], marker='x', color='b')
+#plt.show()
+clean1 = clean(data)
+clean2 = clean(clean1)
+clean3 = clean(clean2)
+#print clean2
+plt.plot(np.arange(1200),clean3[0], color='g')
+#plt.scatter(np.arange(1200),clean3[0], marker='o', color='g')
+#plt.show()
+out = window(clean3, 1000)
 #print out.shape
 #print out
 #plt.plot(out[0])
-#plt.show
+#plt.show()
 
-
+out2 = window(data, 1000)
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -94,7 +99,7 @@ Y = output
 model = Sequential()
 model.add(Dense(50, input_dim=200, init='normal', activation='relu'))
 model.add(Dense(50, init='normal', activation='relu'))
-model.add(Dense(4, init='normal', activation='sigmoid'))
+model.add(Dense(4, init='normal', activation='softmax'))
 
 '''
 epochs = 500
@@ -107,7 +112,7 @@ sgd = SGD(lr=learning_rate, momentum=momentum, decay=decay_rate, nesterov=False)
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the model
-model.fit(X, Y, validation_split = 0.33, nb_epoch=500, batch_size=150)
+model.fit(X, Y, validation_split = 0.1, nb_epoch=700, batch_size=50)
 
 # evaluate the model
 scores = model.evaluate(X, Y)
