@@ -125,3 +125,6 @@ predictions = model.predict(X)
 rounded = [[round(x1),round(x2),round(x3),round(x4)] for [x1,x2,x3,x4] in predictions]
 print rounded
 
+# using visualization
+#from keras.utils.visualize_util import plot
+#plot(model, to_file='model.png', show_shapes=True)
