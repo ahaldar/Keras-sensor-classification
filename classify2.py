@@ -64,9 +64,9 @@ out = window(clean3, 1000)
 data2 = np.column_stack([data, output])
 print data2.shape
 
-mapsize = (16, 1)
+mapsize = (20, 20)
 sm = SOMFactory().build(data2, mapsize, normalization = 'var', initialization='random', component_names=output)
-sm.train(n_job=1, verbose=False, train_rough_len=20, train_finetune_len=20)
+sm.train(n_job=1, train_rough_len=20, train_finetune_len=20)
 
 topographic_error = sm.calculate_topographic_error()
 quantization_error = np.mean(sm._bmu[1])
@@ -76,3 +76,8 @@ from sompy.visualization.hitmap import HitMapView
 sm.cluster(4)
 hits  = HitMapView(10,10,"Clustering",text_size=12)
 a=hits.show(sm)
+
+
+predictions = sm.predict(data, k=1, wt='distance')
+rounded = [round(i) for i in predictions]
+print rounded
